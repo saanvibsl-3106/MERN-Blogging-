@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
 
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user,setUser]=useState("");
-
+  const [isLoading,setIsLodding]=useState(true);
   const [services,setServices]=useState("");
 
   const storeTokenInLS = (serverToken) => {
@@ -31,18 +31,22 @@ export const AuthProvider = ({ children }) => {
   const userAuthentication = async()=>{
     
     try {
+      setIsLodding(true);
       const response = await fetch("http://localhost:5001/api/auth/user", {
         method: "GET",
         headers: {
           Authorization: authorizationToken,
         },
+      
       });
    if (response.ok) {
      const data = await response.json();
      console.log("user data",data.userData);
      setUser(data.userData);
+     setIsLodding(false);
    } else {
      console.error("Error fetching user data");
+     setIsLodding(false);
    }
 
     }catch(error){
@@ -80,6 +84,7 @@ export const AuthProvider = ({ children }) => {
         user,
         services,
         authorizationToken,
+        isLoading,
       }}
     >
       {children}
